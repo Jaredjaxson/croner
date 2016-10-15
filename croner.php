@@ -1,17 +1,37 @@
 <?php
+/*
+Обычная дата (ЧеловекоЧитаемая дата) 	Секунды
+	1 минута	60 секунд
+	1 час		3600 секунд
+	1 день		86400 секунд
+	1 неделя	604800 секунд
+	1 месяц  	2629743 секунд
+	1 год		31556926 секунд
 
+ Аттрибуты для заданий.
+	 m - минуты
+	 h - часы
+	 d - день
+	 w - неделя
+	 M - месяц
+	 Y - год
+
+	 - перед буквой,значит нужно получить последнюю секунду,минуту,час,дня,недели,месяца
+
+*/
 	date_default_timezone_set('Europe/Moscow');
-	define ("CONST_TIME",1);// in second
+	define ("CONST_TIME",1);
 	
 	class croner 
 	{
-
+		private $task;
+		
 		function __construct()
 		{
 			$this->start_on = time();
 		}
 		
-		public function GetTime($i)
+		public function ChekTime($i)
 		{
 			if(is_numeric($i)){
 				$time = $i + $this->task->$i->last;
@@ -23,16 +43,10 @@
 			}
 			if(strpos($i,':') !== false){ // and is_numeric(str_replace(':','',$i))
 				// 
+				echo $this->TimeToUnix($i) ." ". time()."\n";
 				if($this->task->$i->next == 0){
-					if(date('H:i') <= $i){
+					if($this->TimeToUnix($i) == time()){
 						$this->task->$i->last = time();
-						$this->task->$i->next = time() + GetTimeAtr('d');
-						return TRUE;
-					}
-				}else{
-					if($this->task->$i->next >= time()){
-						$this->task->$i->last = time();
-						$this->task->$i->next = time() + GetTimeAtr('d');
 						return TRUE;
 					}
 				}
@@ -61,7 +75,7 @@
 		{
 			foreach($this->task as $key => $value)
 			{
-				if($this->GetTime($key)){
+				if($this->ChekTime($key)){
 					$this->CalledFunc($key);
 				} 
 			}
@@ -91,8 +105,17 @@
 		public function StartCron(){
 			while( TRUE ) {
 				$this->FindTask();
+				echo date('H:i:s')."\n";
 				sleep(CONST_TIME);
 			}
+		}
+		
+		private function TimeToUnix($in)
+		{
+			$c = substr_count($in,':');
+			if($c == 0)return FALSE;
+			if(strlen($in) == 5 and $c == 1)$in.':00';
+			return strtotime($in);
 		}
 	}
 ?>
