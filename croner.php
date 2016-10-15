@@ -43,14 +43,10 @@
 			}
 			if(strpos($i,':') !== false){ // and is_numeric(str_replace(':','',$i))
 				// 
-				echo $this->TimeToUnix($i) ." ". time()."\n";
-				if($this->task->$i->next == 0){
-					if($this->TimeToUnix($i) == time()){
-						$this->task->$i->last = time();
-						return TRUE;
-					}
+				if($this->TimeToUnix($i) == time()){
+					$this->task->$i->last = time();
+					return TRUE;
 				}
-
 			}
 			return FALSE;
 		}
@@ -105,7 +101,6 @@
 		public function StartCron(){
 			while( TRUE ) {
 				$this->FindTask();
-				echo date('H:i:s')."\n";
 				sleep(CONST_TIME);
 			}
 		}
